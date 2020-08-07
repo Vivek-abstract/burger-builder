@@ -1,0 +1,10 @@
+.HamburgerLine {
+    width: 35px;
+    height: 3px;
+    background-color: white;
+    margin: 6px 0;
+}
+
+.HamburgerIcon {
+    cursor: pointer;
+}
