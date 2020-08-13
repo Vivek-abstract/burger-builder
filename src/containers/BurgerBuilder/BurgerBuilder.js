@@ -16,18 +16,28 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
     state = {
-        ingredients: {
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0,
-        },
+        ingredients: null,
         totalPrice: 4,
         purchaseable: false,
         purchasing: false,
         loading: false,
+        error: null,
     };
     db = firebase.firestore();
+
+    componentDidMount() {
+        this.db
+            .collection("ingredients")
+            .doc("default-config")
+            .get()
+            .then((ingredients) => {
+                console.log(ingredients.data());
+                this.setState({ ingredients: ingredients.data() });
+            })
+            .catch((err) => {
+                this.setState({ error: err });
+            });
+    }
 
     updatePurchaseState(ingredients) {
         const sum = Object.values(ingredients).reduce((sum, curr) => {
@@ -78,6 +88,10 @@ class BurgerBuilder extends Component {
         this.setState({ purchasing: false });
     };
 
+    errorDismissedHandler = () => {
+        this.setState({ error: null });
+    };
+
     purchaseContinueHandler = () => {
         const order = {
             ingredients: this.state.ingredients,
@@ -87,10 +101,17 @@ class BurgerBuilder extends Component {
         this.db
             .collection("orders")
             .add(order)
-            .then((res) => this.setState({ loading: false, purchasing: false }))
-            .catch((err) =>
-                this.setState({ loading: false, purchasing: false })
-            );
+            .then((res) => {
+                this.setState({ loading: false, purchasing: false });
+            })
+            .catch((err) => {
+                console.error(err);
+                this.setState({
+                    loading: false,
+                    purchasing: false,
+                    error: err,
+                });
+            });
     };
 
     render() {
@@ -101,14 +122,29 @@ class BurgerBuilder extends Component {
             disableInfo[key] = disableInfo[key] <= 0 ? true : false;
         }
 
-        let orderSummary = (
-            <OrderSummary
-                ingredients={this.state.ingredients}
-                purchaseCancelled={this.purchaseCancelHandler}
-                purchaseContinued={this.purchaseContinueHandler}
-                totalPrice={this.state.totalPrice}
-            />
+        let orderSummary = null;
+        let burger = <Spinner />
+        if (this.state.ingredients) {
+            orderSummary = (
+                <OrderSummary
+                    ingredients={this.state.ingredients}
+                    purchaseCancelled={this.purchaseCancelHandler}
+                    purchaseContinued={this.purchaseContinueHandler}
+                    totalPrice={this.state.totalPrice}
+                />
+            );
+            burger = <Burger ingredients={this.state.ingredients} />;
+        }
+
+        let errors = (
+            <Modal
+                show={this.state.error}
+                modalClosed={this.errorDismissedHandler}
+            >
+                Something went wrong!
+            </Modal>
         );
+
         if (this.state.loading) {
             orderSummary = <Spinner />;
         }
@@ -121,7 +157,8 @@ class BurgerBuilder extends Component {
                 >
                     {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients} />
+                {errors}
+                {burger}
                 <BuildControls
                     ingredientAdded={this.addIngredientHandler}
                     ingredientRemoved={this.removeIngredientHandler}
