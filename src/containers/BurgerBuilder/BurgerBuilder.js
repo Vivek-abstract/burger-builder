@@ -31,7 +31,6 @@ class BurgerBuilder extends Component {
             .doc("default-config")
             .get()
             .then((ingredients) => {
-                console.log(ingredients.data());
                 this.setState({ ingredients: ingredients.data() });
             })
             .catch((err) => {
@@ -93,25 +92,14 @@ class BurgerBuilder extends Component {
     };
 
     purchaseContinueHandler = () => {
-        const order = {
-            ingredients: this.state.ingredients,
-            totalPrice: this.state.totalPrice,
-        };
-        this.setState({ loading: true });
-        this.db
-            .collection("orders")
-            .add(order)
-            .then((res) => {
-                this.setState({ loading: false, purchasing: false });
-            })
-            .catch((err) => {
-                console.error(err);
-                this.setState({
-                    loading: false,
-                    purchasing: false,
-                    error: err,
-                });
-            });
+        this.setState({ purchasing: false });
+        this.props.history.push({
+            pathname: "/checkout",
+            state: {
+                ingredients: this.state.ingredients,
+                totalPrice: this.state.totalPrice,
+            },
+        });
     };
 
     render() {
@@ -123,7 +111,7 @@ class BurgerBuilder extends Component {
         }
 
         let orderSummary = null;
-        let burger = <Spinner />
+        let burger = <Spinner />;
         if (this.state.ingredients) {
             orderSummary = (
                 <OrderSummary
