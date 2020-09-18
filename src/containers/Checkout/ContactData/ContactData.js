@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import Button from "../../../components/UI/Button/Button";
 import classes from "./ContactData.module.css";
-import firebase from "../../../Firebase";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import { connect } from "react-redux";
+import * as actions from '../../../store/actions/index';
 
 class ContactData extends Component {
     state = {
@@ -74,7 +75,7 @@ class ContactData extends Component {
                         { value: "cheapest", displayValue: "Cheapest" },
                     ],
                 },
-                value: "",
+                value: "fastest",
                 valid: true,
                 validation: {},
             },
@@ -82,7 +83,6 @@ class ContactData extends Component {
         loading: false,
         isFormValid: false,
     };
-    db = firebase.firestore();
 
     orderHandler = (event) => {
         event.preventDefault();
@@ -92,24 +92,11 @@ class ContactData extends Component {
         }
         const order = {
             ingredients: this.props.ingredients,
-            totalPrice: this.props.totalPrice,
+            totalPrice: this.props.totalPrice.toFixed(2),
             orderData: formData,
         };
-        this.setState({ loading: true });
-        this.db
-            .collection("orders")
-            .add(order)
-            .then((res) => {
-                this.setState({ loading: false });
-                this.props.history.push("/");
-            })
-            .catch((err) => {
-                console.error(err);
-                this.setState({
-                    loading: false,
-                    error: err,
-                });
-            });
+
+        this.props.onOrderBurger(order);
     };
 
     inputChangedHander = (event, inputIdentifier) => {
@@ -163,7 +150,7 @@ class ContactData extends Component {
             });
         }
 
-        if (!this.state.loading) {
+        if (!this.props.loading) {
             form = (
                 <form onSubmit={this.orderHandler}>
                     {formElementArray.map((formElement) => (
@@ -199,4 +186,18 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData;
+const mapStateToProps = state => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        loading: state.order.loading,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onOrderBurger: (order) => dispatch(actions.purchaseBurger(order))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactData);
