@@ -45,3 +45,46 @@ export const purchaseInit = () => {
         type: actionTypes.PURCHASE_INIT
     }
 }
+
+export const fetchOrderSuccess = (orders) => {
+    return {
+        type: actionTypes.FETCH_ORDER_SUCCESS,
+        orders: orders
+    }
+}
+
+export const fetchOrderFailure = (err) => {
+    return {
+        type: actionTypes.FETCH_ORDER_FAILURE,
+        error: err
+    }
+}
+
+
+export const fetchOrderStart = () => {
+    return {
+        type: actionTypes.FETCH_ORDER_START
+    }
+}
+
+export const fetchOrders =() => {
+    return dispatch => {
+        const fetchedOrders = [];
+
+        db
+        .collection("orders")
+        .get()
+        .then((orders) => {
+            orders.forEach((order) => {
+                fetchedOrders.push({
+                    ...order.data(),
+                    id: order.id,
+                });
+            });
+            dispatch(fetchOrderSuccess(fetchedOrders))
+        })
+        .catch((err) => {
+            dispatch(fetchOrderFailure(err))
+        });
+    }
+}

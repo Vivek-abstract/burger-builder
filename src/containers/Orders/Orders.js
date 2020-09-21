@@ -1,46 +1,28 @@
 import React, { Component } from "react";
 import Order from "../../components/Order/Order";
-import firebase from "../../Firebase";
 import Modal from "../../components/UI/Modal/Modal";
+import * as actions from "../../store/actions/index";
+import { connect } from "react-redux";
+import Spinner from "../../components/UI/Spinner/Spinner";
 
 class Orders extends Component {
-    db = firebase.firestore();
-    state = {
-        orders: null,
-        error: null,
-    };
-
+    
     componentDidMount() {
-        const fetchedOrders = [];
-        this.db
-            .collection("orders")
-            .get()
-            .then((orders) => {
-                orders.forEach((order) => {
-                    fetchedOrders.push({
-                        ...order.data(),
-                        id: order.id,
-                    });
-                });
-                this.setState({ orders: fetchedOrders });
-            })
-            .catch((err) => {
-                this.setState({ error: err });
-            });
+        this.props.fetchOrders();
     }
 
     render() {
         let errors = (
             <Modal
-                show={this.state.error}
+                show={this.props.error}
                 modalClosed={this.errorDismissedHandler}
             >
                 Something went wrong!
             </Modal>
         );
-        let orders = null;
-        if (this.state.orders) {
-            orders = this.state.orders.map((order) => (
+        let orders = <Spinner />;
+        if (!this.props.loading) {
+            orders = this.props.orders.map((order) => (
                 <Order
                     key={order.id}
                     ingredients={order.ingredients}
@@ -57,4 +39,18 @@ class Orders extends Component {
     }
 }
 
-export default Orders;
+const mapStateToProps = (state) => {
+    return {
+        error: state.order.error,
+        orders: state.order.orders,
+        loading: state.order.loading
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        fetchOrders: () => dispatch(actions.fetchOrders()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);

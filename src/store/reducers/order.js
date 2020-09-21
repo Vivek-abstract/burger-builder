@@ -4,6 +4,7 @@ const initialState = {
     orders: [],
     loading: false,
     purchases: false,
+    error: null
 }
 
 const reducer = (state=initialState, action) => {
@@ -36,6 +37,26 @@ const reducer = (state=initialState, action) => {
             return {
                 ...state,
                 purchased: false
+            }
+        }
+        case actionTypes.FETCH_ORDER_START: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionTypes.FETCH_ORDER_SUCCESS: {
+            return {
+                ...state,
+                orders: action.orders,
+                loading: false,
+            }
+        }
+        case actionTypes.FETCH_ORDER_FAILURE: {
+            return {
+                ...state,
+                loading: false,
+                error: action.error
             }
         }
         default:

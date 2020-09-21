@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
-import { Redirect, Route } from "react-router";
-import ContactData from "./ContactData/ContactData";
 import { connect } from "react-redux";
-import * as actions from '../../store/actions/index'
+import { Redirect, Route } from "react-router";
+import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
+import ContactData from "./ContactData/ContactData";
 
 class Checkout extends Component {
     checkoutCancelled = () => {
