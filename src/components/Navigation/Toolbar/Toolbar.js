@@ -7,12 +7,14 @@ import HamburgerIcon from "./HamburgerIcon/HamburgerIcon";
 const toolbar = (props) => {
     return (
         <header className={classes.Toolbar}>
-            <HamburgerIcon showSideDrawer={props.showSideDrawer}/>
+            {props.show() ? (
+                <HamburgerIcon showSideDrawer={props.showSideDrawer} />
+            ) : null}
             <div className={classes.Logo}>
                 <Logo />
             </div>
             <nav className={classes.DesktopOnly}>
-                <NavigationItems />
+                <NavigationItems isAuth={props.isAuthenticated} />
             </nav>
         </header>
     );

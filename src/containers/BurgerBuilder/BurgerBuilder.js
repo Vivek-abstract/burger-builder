@@ -53,6 +53,10 @@ class BurgerBuilder extends Component {
         return sum > 0;
     };
 
+    redirectHandler = () => {
+        this.props.history.push({pathname:'/auth', search:'?redirectTo=checkout'})
+    }
+
     render() {
         const disableInfo = {
             ...this.props.ingredients,
@@ -87,6 +91,8 @@ class BurgerBuilder extends Component {
                     price={this.props.totalPrice}
                     purchaseable={this.updatePurchaseState()}
                     ordered={this.purchaseHandler}
+                    isAuth={this.props.isAuth}
+                    redirected={this.redirectHandler}
                 />
             );
         }
@@ -126,6 +132,7 @@ const mapStateToProps = (state) => {
         totalPrice: state.burgerBuilder.totalPrice,
         purchaseable: state.burgerBuilder.purchaseable,
         error: state.burgerBuilder.error,
+        isAuth: state.auth.isAuthenticated
     };
 };
 

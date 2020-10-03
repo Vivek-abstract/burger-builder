@@ -4,7 +4,7 @@ import classes from "./ContactData.module.css";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 import { connect } from "react-redux";
-import * as actions from '../../../store/actions/index';
+import * as actions from "../../../store/actions/index";
 
 class ContactData extends Component {
     state = {
@@ -94,6 +94,7 @@ class ContactData extends Component {
             ingredients: this.props.ingredients,
             totalPrice: this.props.totalPrice.toFixed(2),
             orderData: formData,
+            userId: this.props.userId,
         };
 
         this.props.onOrderBurger(order);
@@ -186,18 +187,19 @@ class ContactData extends Component {
     }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
         ingredients: state.burgerBuilder.ingredients,
         totalPrice: state.burgerBuilder.totalPrice,
         loading: state.order.loading,
-    }
-}
+        userId: state.auth.userId,
+    };
+};
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        onOrderBurger: (order) => dispatch(actions.purchaseBurger(order))
-    }
-}
+        onOrderBurger: (order) => dispatch(actions.purchaseBurger(order)),
+    };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

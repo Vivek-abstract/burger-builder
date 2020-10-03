@@ -5,4 +5,7 @@ export {
     initIngredients,
     setIngredients,
 } from "./burgerBuilder";
-export { purchaseBurger, purchaseInit, fetchOrders} from "./order";
+
+export { purchaseBurger, purchaseInit, fetchOrders } from "./order";
+
+export { auth, setUserState, deleteUserState, logout } from "./auth";

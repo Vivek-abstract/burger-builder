@@ -10,6 +10,28 @@ const controls = [
 ];
 
 const buildControls = (props) => {
+    let button = (
+        <button
+            disabled={!props.purchaseable}
+            onClick={props.ordered}
+            className={classes.OrderButton}
+        >
+            ORDER NOW
+        </button>
+    );
+
+    if (!props.isAuth) {
+        button = (
+            <button
+                disabled={!props.purchaseable}
+                onClick={props.redirected}
+                className={classes.OrderButton}
+            >
+                SIGN UP TO ORDER
+            </button>
+        );
+    }
+
     return (
         <div className={classes.BuildControls}>
             <p>
@@ -24,13 +46,7 @@ const buildControls = (props) => {
                     disabled={props.disabled[control.type]}
                 />
             ))}
-            <button
-                disabled={!props.purchaseable}
-                onClick={props.ordered}
-                className={classes.OrderButton}
-            >
-                ORDER NOW
-            </button>
+            {button}
         </div>
     );
 };

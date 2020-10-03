@@ -30,11 +30,9 @@ export const purchaseBurger = (orderData) => {
         db.collection("orders")
             .add(orderData)
             .then((res) => {
-                console.log(res);
                 dispatch(purchaseBurgerSuccess(res.id, orderData));
             })
             .catch((err) => {
-                console.error(err);
                 dispatch(purchaseBurgerFailed(err));
             });
     };
@@ -67,12 +65,13 @@ export const fetchOrderStart = () => {
     }
 }
 
-export const fetchOrders =() => {
+export const fetchOrders = (userId) => {
     return dispatch => {
         const fetchedOrders = [];
 
         db
         .collection("orders")
+        .where('userId', '==', userId)
         .get()
         .then((orders) => {
             orders.forEach((order) => {
